@@ -1,7 +1,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Any, ClassVar
 
 
 @dataclass
@@ -13,22 +13,29 @@ class Book:
     - __str__는 "{title} by {author} ({year})" 형식 반환
     - @classmethod from_dict(cls, data: Dict[str, Any]) -> Book 구현
     """
+    # 인스턴스 변수
     title: str
     author: str
     year: int
+    
+    # 클래스 변수
+    book_count: ClassVar[int] = 0
 
-    # TODO: 클래스 변수 book_count 선언 및 증가 로직 추가
-    # TODO: 생성 시 book_count 증가
     # book_count: int = 0  # 힌트: dataclass의 필드가 아닌 클래스 속성으로 선언
-    def __init__(self):
-        pass
+    def __post_init__(self):
+        # 2. __init__ 대신 __post_init__을 사용합니다.
+        # 이 메서드는 dataclass가 자동으로 __init__을 실행한 직후에 호출됩니다.
+        Book.book_count += 1
 
     def __str__(self) -> str:
-        # TODO: 지정된 문자열 포맷 반환
         # e.g. 책이름 by 지은이 (2001)
-        return None
+        str = f"{self.title} by {self.author} ({self.year})"
+        return str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Book":
-        # TODO: dict에서 title/author/year를 읽어 Book 생성
-        raise NotImplementedError
+    def from_dict(cls, data: Dict[str, Any]) -> Book:
+        return cls(
+            title=data["title"],
+            author=data["author"],
+            year=data["year"]
+        )
